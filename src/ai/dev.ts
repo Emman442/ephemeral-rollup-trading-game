@@ -1,1 +1,5 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/animate-leaderboard-with-gen-ai.ts';
+import '@/ai/flows/generate-system-messages.ts';

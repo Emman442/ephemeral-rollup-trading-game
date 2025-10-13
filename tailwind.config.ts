@@ -10,9 +10,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
-        code: ['monospace'],
+        sans: ['var(--font-sans)', 'sans-serif'],
+        heading: ['var(--font-heading)', 'sans-serif'],
+      },
+      backgroundImage: {
+        'buy-gradient': 'linear-gradient(90deg, hsl(var(--primary)), #4AF2A0)',
+        'sell-gradient': 'linear-gradient(90deg, #FF457D, #FF6B9B)',
       },
       colors: {
         background: 'hsl(var(--background))',
