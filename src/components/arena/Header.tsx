@@ -1,3 +1,4 @@
+
 "use client";
 
 import { WalletButton } from "@/components/shared/WalletButton";
