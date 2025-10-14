@@ -93,7 +93,7 @@ export function ArenaLayout() {
                 <div className="lg:col-span-6 flex flex-col">
                   <TradingPanel />
                 </div>
-                <div className="lg:col-span-3 flex flex-col glassmorphism">
+                <div className="lg:col-span-3 flex flex-col min-h-0 glassmorphism">
                   <RightPanel />
                 </div>
               </div>
