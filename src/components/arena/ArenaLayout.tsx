@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useEffect, useCallback, memo } from "react";
+import { useEffect, memo } from "react";
 import { Header } from "@/components/arena/Header";
 import { PriceFeed } from "@/components/arena/PriceFeed";
 import { TradingPanel } from "@/components/arena/TradingPanel";
@@ -36,10 +37,6 @@ export function ArenaLayout() {
   const { state, dispatch } = useArena();
   const { isRunning, timeLeft } = state.roundState;
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    dispatch({ type: 'START_ROUND' });
-  }, [dispatch]);
 
   useEffect(() => {
     if (isRunning) {

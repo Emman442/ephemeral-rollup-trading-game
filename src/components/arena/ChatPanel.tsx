@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -13,14 +14,17 @@ export function ChatPanel() {
   const { state, dispatch } = useArena();
   const { chat } = state;
   const [message, setMessage] = useState("");
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+    const viewport = scrollViewportRef.current;
+    if (viewport) {
+      setTimeout(() => {
+        viewport.scrollTo({
+          top: viewport.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 100);
     }
   }, [chat]);
 
@@ -34,7 +38,7 @@ export function ChatPanel() {
 
   return (
     <div className="h-full flex flex-col">
-      <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+      <ScrollArea className="flex-grow p-4" viewportRef={scrollViewportRef}>
         <div className="space-y-4">
           <AnimatePresence initial={false}>
             {chat.map((msg) => (

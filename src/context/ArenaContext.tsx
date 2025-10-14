@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useContext, useReducer, ReactNode } from 'react';
@@ -52,7 +53,7 @@ const initialState: ArenaState = {
   chat: INITIAL_CHAT_MESSAGES,
   roundState: {
     duration: ROUND_DURATION,
-    timeLeft: ROUND_DURATION,
+    timeLeft: 0,
     isRunning: false,
   },
 };
@@ -77,7 +78,7 @@ const arenaReducer = (state: ArenaState, action: ArenaAction): ArenaState => {
       };
     case 'DISCONNECT_WALLET':
       return {
-        ...state,
+        ...initialState,
         connected: false,
         user: INITIAL_USER,
         leaderboard: INITIAL_LEADERBOARD,
