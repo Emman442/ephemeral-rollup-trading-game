@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-const footerLinks = ["About", "Rules", "Leaderboard", "Discord"];
+const footerLinks = [
+  { name: "About", href: "#" },
+  { name: "Rules", href: "#" },
+  { name: "Leaderboard", href: "/arena" },
+  { name: "Discord", href: "#" },
+];
 
 export function Footer() {
   return (
@@ -9,11 +14,11 @@ export function Footer() {
         <nav className="flex gap-x-8">
           {footerLinks.map((link) => (
             <Link
-              key={link}
-              href="#"
+              key={link.name}
+              href={link.href}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              {link}
+              {link.name}
             </Link>
           ))}
         </nav>
