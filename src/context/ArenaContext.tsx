@@ -14,6 +14,7 @@ import type {
   LeaderboardEntry,
   User,
   UserPosition,
+  TradingGame,
 } from "@/lib/types";
 
 const ROUND_DURATION = 300; // 5 minutes
@@ -25,6 +26,7 @@ interface ArenaState {
   currentAsset: string;
   leaderboard: LeaderboardEntry[];
   chat: ChatMessage[];
+  games: TradingGame[];
   roundState: {
     duration: number;
     timeLeft: number;
@@ -42,7 +44,9 @@ type ArenaAction =
   | { type: 'SWITCH_ASSET'; payload: string }
   | { type: 'TRADE'; payload: { type: 'buy' | 'sell'; tradeAmountUSD: number; leverage: number } }
   | { type: 'CLOSE_POSITION' }
-  | { type: 'SET_ROUND_OVER' };
+  | { type: 'SET_ROUND_OVER' }
+  | { type: 'CREATE_GAME'; payload: Omit<TradingGame, 'id' | 'createdBy' | 'players'> };
+
 
 const initialState: ArenaState = {
   connected: false,
@@ -51,6 +55,7 @@ const initialState: ArenaState = {
   currentAsset: "BTC",
   leaderboard: INITIAL_LEADERBOARD,
   chat: INITIAL_CHAT_MESSAGES,
+  games: [],
   roundState: {
     duration: ROUND_DURATION,
     timeLeft: 0,
@@ -309,7 +314,19 @@ const arenaReducer = (state: ArenaState, action: ArenaAction): ArenaState => {
         
         if (!finalState.user.position.type) return finalState;
         return arenaReducer(finalState, { type: 'CLOSE_POSITION' });
-
+    }
+    case 'CREATE_GAME': {
+      if (!state.user.wallet) return state;
+      const newGame: TradingGame = {
+        ...action.payload,
+        id: new Date().toISOString(),
+        createdBy: state.user.wallet,
+        players: [state.user.wallet],
+      };
+      return {
+        ...state,
+        games: [...state.games, newGame],
+      };
     }
     default:
       return state;

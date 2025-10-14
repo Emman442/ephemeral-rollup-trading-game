@@ -35,3 +35,12 @@ export interface ChatMessage {
   time: string;
   isSystem?: boolean;
 }
+
+export interface TradingGame {
+  id: string;
+  name: string;
+  createdBy: string;
+  startingCapital: number;
+  startTime: Date;
+  players: string[];
+}
