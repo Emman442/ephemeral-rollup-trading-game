@@ -6,10 +6,25 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Users, Calendar, DollarSign } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 export function GameList() {
-    const { state } = useArena();
+    const { state, dispatch } = useArena();
     const { games } = state;
+    const router = useRouter();
+    const { connected } = useWallet();
+    const { setVisible } = useWalletModal();
+
+    const handleJoinGame = (gameId: string) => {
+        if (!connected) {
+            setVisible(true);
+            return;
+        }
+        dispatch({ type: "JOIN_GAME", payload: gameId });
+        router.push("/arena");
+    };
 
     if (games.length === 0) {
         return (
@@ -45,7 +60,7 @@ export function GameList() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button className="w-full">Join Game</Button>
+                            <Button className="w-full" onClick={() => handleJoinGame(game.id)}>Join Game</Button>
                         </CardFooter>
                     </Card>
                 ))}

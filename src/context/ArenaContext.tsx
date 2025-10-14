@@ -45,7 +45,8 @@ type ArenaAction =
   | { type: 'TRADE'; payload: { type: 'buy' | 'sell'; tradeAmountUSD: number; leverage: number } }
   | { type: 'CLOSE_POSITION' }
   | { type: 'SET_ROUND_OVER' }
-  | { type: 'CREATE_GAME'; payload: Omit<TradingGame, 'id' | 'createdBy' | 'players'> };
+  | { type: 'CREATE_GAME'; payload: Omit<TradingGame, 'id' | 'createdBy' | 'players'> }
+  | { type: 'JOIN_GAME'; payload: string };
 
 
 const initialState: ArenaState = {
@@ -242,7 +243,7 @@ const arenaReducer = (state: ArenaState, action: ArenaAction): ArenaState => {
           id: state.chat.length + 1,
           user: 'TradeArena',
           text: "Close your existing position first.",
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          time: new date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           isSystem: true,
         };
         return { ...state, chat: [...state.chat.slice(-100), systemMessage] };
@@ -327,6 +328,17 @@ const arenaReducer = (state: ArenaState, action: ArenaAction): ArenaState => {
         ...state,
         games: [...state.games, newGame],
       };
+    }
+    case 'JOIN_GAME': {
+      // For now, this just logs that a user joined a game.
+      // In a real app, this would involve more complex logic.
+      console.log(`User ${state.user.wallet} joined game ${action.payload}`);
+      const game = state.games.find(g => g.id === action.payload);
+      if (game && !game.players.includes(state.user.wallet!)) {
+        const games = state.games.map(g => g.id === action.payload ? {...g, players: [...g.players, state.user.wallet!]} : g);
+        return { ...state, games };
+      }
+      return state;
     }
     default:
       return state;
