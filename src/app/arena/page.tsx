@@ -4,11 +4,10 @@ import { ArenaLayout } from "@/components/arena/ArenaLayout";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useArena } from "@/context/ArenaContext";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export default function ArenaPage() {
-  const { state } = useArena();
-  const { connected } = state;
+  const {connected} = useWallet()
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
-import { AppProviders } from '@/components/providers/AppProviders';
-import { Toaster } from '@/components/ui/toaster';
+
+import { Toaster } from 'sonner';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import AppWalletProvider from '@/components/providers/AppWalletProvider';
+import { GameProvider } from '../../context/gameContext';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -30,15 +32,17 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
+          "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
           fontHeading.variable
         )}
       >
-        <AppProviders>
-          {children}
-          <Toaster />
-        </AppProviders>
+        <AppWalletProvider>
+          <GameProvider>
+            {children}
+            <Toaster />
+          </GameProvider>
+        </AppWalletProvider>
       </body>
     </html>
   );

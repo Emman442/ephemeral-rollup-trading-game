@@ -7,11 +7,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
-import { useArena } from "@/context/ArenaContext";
+
 
 export function Leaderboard() {
-  const { state } = useArena();
-  const { leaderboard } = state;
+
+  const leaderboard = [
+    { rank: 1, wallet: "Alice", equity: 12500.75, avatar: "/avatars/alice.png" },
+    { rank: 2, wallet: "Bob", equity: 11500.50, avatar: "/avatars/bob.png" },
+    { rank: 3, wallet: "Charlie", equity: 11000.00, avatar: "/avatars/charlie.png" },
+    { rank: 4, wallet: "You", equity: 9500.25, avatar: "/avatars/you.png" },
+    { rank: 5, wallet: "Eve", equity: 9000.00, avatar: "/avatars/eve.png" },
+    // ...more entries
+  ];
   
   return (
     <ScrollArea className="h-full">

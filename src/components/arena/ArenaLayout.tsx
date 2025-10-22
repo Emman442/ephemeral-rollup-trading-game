@@ -13,8 +13,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import { MessageSquare, Trophy } from "lucide-react";
-import { generateSystemMessage } from "@/ai/flows/generate-system-messages";
-import { useArena } from "@/context/ArenaContext";
 
 const RightPanel = memo(function RightPanel() {
   return (
@@ -34,35 +32,19 @@ const RightPanel = memo(function RightPanel() {
 });
 
 export function ArenaLayout() {
-  const { state, dispatch } = useArena();
-  const { isRunning, timeLeft } = state.roundState;
+  const isRunning = true;
   const isMobile = useIsMobile();
+  const timeLeft = 60;
 
   useEffect(() => {
     if (isRunning) {
       const gameLoop = setInterval(() => {
-        dispatch({ type: 'TICK' });
       }, 1000);
       return () => clearInterval(gameLoop);
     }
-  }, [isRunning, dispatch]);
+  }, [isRunning]);
 
-  useEffect(() => {
-    const systemMessageInterval = setInterval(async () => {
-      if (isRunning && Math.random() < 0.1) { // 10% chance every 10 seconds
-        try {
-          const { message } = await generateSystemMessage({});
-          if (message) {
-            dispatch({ type: 'ADD_SYSTEM_MESSAGE', payload: message });
-          }
-        } catch (error) {
-          console.error("Error generating system message:", error);
-        }
-      }
-    }, 10000);
 
-    return () => clearInterval(systemMessageInterval);
-  }, [isRunning, dispatch]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">

@@ -11,18 +11,22 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Trophy, TrendingUp, Wallet } from "lucide-react";
-import { useArena } from "@/context/ArenaContext";
 
 interface RoundOverModalProps {
   isOpen: boolean;
 }
 
 export function RoundOverModal({ isOpen }: RoundOverModalProps) {
-  const { state, dispatch } = useArena();
-  const { user, leaderboard } = state;
+  const leaderboard = [
+    { wallet: "Alice", rank: 1, equity: 15000 },
+    { wallet: "Bob", rank: 2, equity: 13000 },
+    { wallet: "You", rank: 3, equity: 12000 },
+    { wallet: "Charlie", rank: 4, equity: 11000 },
+  ];
 
+  const user = leaderboard.find((entry) => entry.wallet === "You") || { wallet: "You", rank: 0, equity: 0 };
   const startRound = () => {
-    dispatch({ type: 'START_ROUND' });
+
   };
   
   const userRank = leaderboard.find(e => e.wallet === "You")?.rank || 0;

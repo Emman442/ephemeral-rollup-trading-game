@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -8,14 +7,25 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AnimatePresence, motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useArena } from "@/context/ArenaContext";
+import { useSocket } from "@/hooks/useSocket";
+import { toast } from "sonner";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { format } from "date-fns";
+import { truncateAddress } from "../../../helpers/trncateAddress";
+
+interface Message {
+  player: string;
+  message: string;
+  isSystemMessage: boolean;
+  timestamp?: Date;
+}
 
 export function ChatPanel() {
-  const { state, dispatch } = useArena();
-  const { chat } = state;
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
+  const { connected, publicKey } = useWallet();
+  const socket = useSocket();
   const scrollViewportRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const viewport = scrollViewportRef.current;
     if (viewport) {
@@ -26,14 +36,42 @@ export function ChatPanel() {
         });
       }, 100);
     }
-  }, [chat]);
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleConnect = () => {
+      console.log("✅ Connected to server with id:", socket.id);
+    };
+
+    const handleGameMessage = (data: Message) => {
+
+       console.log("📩 New game_message received:", data);
+      setMessages((prevMessages: any) => [...prevMessages, data]);
+    };
+
+    const handleError = (error: any) => {
+      console.error("❌ Socket error:", error);
+      toast.error(error.message || "An error occurred");
+    };
+    socket.on("connect", handleConnect);
+    socket.on("game_message", handleGameMessage);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("game_message", handleGameMessage);
+      socket.off("error", handleError);
+    };
+  }, [socket]);
+
+  const sendMessage = (e: any) => {
     e.preventDefault();
-    if (message.trim()) {
-      dispatch({ type: 'SEND_MESSAGE', payload: message.trim() });
-      setMessage("");
-    }
+    if (!message.trim()) return;
+
+    if (!socket) return;
+    socket.emit("send_message", message);
+    setMessage("");
   };
 
   return (
@@ -41,7 +79,7 @@ export function ChatPanel() {
       <ScrollArea className="flex-grow p-4" viewportRef={scrollViewportRef}>
         <div className="space-y-4">
           <AnimatePresence initial={false}>
-            {chat.map((msg) => (
+            {messages.map((msg: any) => (
               <motion.div
                 key={msg.id}
                 layout
@@ -50,25 +88,46 @@ export function ChatPanel() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3, type: "spring" }}
                 className={cn(
-                    "flex flex-col",
-                    msg.isSystem ? "items-center" : msg.user === 'You' ? "items-end" : "items-start"
+                  "flex flex-col",
+                  msg.isSystemMessage
+                    ? "items-center"
+                    : msg.player === publicKey?.toString()
+                    ? "items-end"
+                    : "items-start"
                 )}
               >
-                {msg.isSystem ? (
-                   <p className="text-xs text-primary italic p-1 rounded-md">
-                     {msg.text}
-                   </p>
+                {msg.isSystemMessage ? (
+                  <p className="text-xs text-primary italic p-1 rounded-md">
+                    {msg.text}
+                  </p>
                 ) : (
                   <div className="flex items-end gap-2 max-w-[80%]">
-                    <div className={cn(
-                        "rounded-lg p-2 text-sm", 
-                        msg.user === 'You' ? "bg-primary text-primary-foreground" : "bg-muted"
-                    )}>
+                    <div
+                      className={cn(
+                        "rounded-lg p-2 text-sm",
+                        msg.player === publicKey?.toString()
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      )}
+                    >
                       <p className="font-bold text-xs mb-1 text-secondary">
-                        {msg.user}
+                        {msg.player === publicKey?.toString()
+                          ? "You"
+                          : truncateAddress(msg.player)}
                       </p>
-                      <p>{msg.text}</p>
-                      <p className="text-xs opacity-60 text-right mt-1">{msg.time}</p>
+                      <p>{msg.message}</p>
+                      <p className="text-xs opacity-60 text-right mt-1">
+                        {msg.timestamp
+                          ? format(
+                              new Date(
+                                typeof msg.timestamp === "number"
+                                  ? msg.timestamp * 1000
+                                  : msg.timestamp
+                              ),
+                              "HH:mm"
+                            )
+                          : ""}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -78,7 +137,7 @@ export function ChatPanel() {
         </div>
       </ScrollArea>
       <div className="p-4 border-t border-border">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={sendMessage} className="flex gap-2">
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}

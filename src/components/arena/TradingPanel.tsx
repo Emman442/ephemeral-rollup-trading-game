@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -6,64 +5,75 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { useArena } from "@/context/ArenaContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 
 const TRADE_PERCENTAGES = [25, 50, 75, 100];
 
 export function TradingPanel() {
-  const { state, dispatch } = useArena();
-  const { user, currentAsset, assets } = state;
+
   const [leverage, setLeverage] = useState([1]);
   const [tradeAmount, setTradeAmount] = useState(0);
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
 
-  const asset = assets[currentAsset];
+  const asset = { price: 45000 }; // Mocked asset for demonstration
+  const currentAsset = "BTC"; // Mocked current asset
+  const user = {
+    balance: 10000,
+    equity: 10500,
+    pnl: 500,
+
+    position: {
+      type: null as "buy" | "sell" | null,
+      amount: 0,
+      entryPrice: 0,
+    },
+  };
 
   const handleSetAmountFromBalance = (percentage: number) => {
-    const amount = (user.balance * percentage) / 100;
+    const amount = (100 * 60) / 100;
     setTradeAmount(amount);
   };
 
   const trade = (type: "buy" | "sell") => {
     if (tradeAmount <= 0) return;
-    dispatch({ type: 'TRADE', payload: { type, tradeAmountUSD: tradeAmount, leverage: leverage[0] }});
     setTradeAmount(0);
-  }
+  };
 
-  const closePosition = () => {
-    dispatch({ type: 'CLOSE_POSITION' });
-  }
+  const closePosition = () => {};
 
   const renderOrderForm = (type: "buy" | "sell") => (
     <div className="space-y-4">
       <div>
-        <label htmlFor="amount" className="text-sm text-muted-foreground">Amount (USD)</label>
-        <Input 
+        <label htmlFor="amount" className="text-sm text-muted-foreground">
+          Amount (USD)
+        </label>
+        <Input
           id="amount"
           type="number"
-          value={tradeAmount || ''}
+          value={tradeAmount || ""}
           onChange={(e) => setTradeAmount(parseFloat(e.target.value))}
           placeholder="0.00"
           className="bg-input mt-1"
         />
         <div className="flex gap-2 mt-2">
           {TRADE_PERCENTAGES.map((pct) => (
-            <Button 
-                key={pct}
-                variant="outline"
-                size="sm"
-                onClick={() => handleSetAmountFromBalance(pct)}
-                className="flex-1 text-xs"
+            <Button
+              key={pct}
+              variant="outline"
+              size="sm"
+              onClick={() => handleSetAmountFromBalance(pct)}
+              className="flex-1 text-xs"
             >
-                {pct}%
+              {pct}%
             </Button>
           ))}
         </div>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Leverage: {leverage[0]}x</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Leverage: {leverage[0]}x
+        </p>
         <Slider
           defaultValue={[1]}
           min={1}
@@ -76,11 +86,11 @@ export function TradingPanel() {
         size="lg"
         className={cn(
           "w-full text-lg py-6",
-          type === 'buy' ? "buy-gradient" : "sell-gradient"
+          type === "buy" ? "buy-gradient" : "sell-gradient"
         )}
         onClick={() => trade(type)}
       >
-        {type === 'buy' ? "Long" : "Short"} {currentAsset}
+        {type === "buy" ? "Long" : "Short"} {currentAsset}
       </Button>
     </div>
   );
@@ -103,12 +113,17 @@ export function TradingPanel() {
             </div>
             <div className="md:col-span-2">
               <p className="text-sm text-muted-foreground">Unrealized P/L</p>
-              <p className={cn("text-lg font-bold", user.pnl >= 0 ? "text-primary" : "text-red-500")}>
+              <p
+                className={cn(
+                  "text-lg font-bold",
+                  user.pnl >= 0 ? "text-primary" : "text-red-500"
+                )}
+              >
                 ${user.pnl.toFixed(2)}
               </p>
             </div>
           </div>
-          
+
           {user.position.type ? (
             <div className="space-y-4 flex-grow flex flex-col justify-center">
               <Card className="bg-muted/50">
@@ -122,11 +137,21 @@ export function TradingPanel() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Direction</span>
-                    <span className={cn(user.position.type === 'buy' ? 'text-primary' : 'text-red-500')}>{user.position.type === 'buy' ? 'Long' : 'Short'}</span>
+                    <span
+                      className={cn(
+                        user.position.type === "buy"
+                          ? "text-primary"
+                          : "text-red-500"
+                      )}
+                    >
+                      {user.position.type === "buy" ? "Long" : "Short"}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Size</span>
-                    <span>{user.position.amount.toFixed(4)} {currentAsset}</span>
+                    <span>
+                      {user.position.amount.toFixed(4)} {currentAsset}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Entry Price</span>
@@ -136,9 +161,17 @@ export function TradingPanel() {
                     <span className="text-muted-foreground">Current Price</span>
                     <span>${asset.price.toFixed(2)}</span>
                   </div>
-                   <div className="flex justify-between font-bold">
-                    <span className="text-muted-foreground">Unrealized P/L</span>
-                    <span className={cn(user.pnl >= 0 ? 'text-primary' : 'text-red-500')}>${user.pnl.toFixed(2)}</span>
+                  <div className="flex justify-between font-bold">
+                    <span className="text-muted-foreground">
+                      Unrealized P/L
+                    </span>
+                    <span
+                      className={cn(
+                        user.pnl >= 0 ? "text-primary" : "text-red-500"
+                      )}
+                    >
+                      ${user.pnl.toFixed(2)}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -152,7 +185,11 @@ export function TradingPanel() {
               </Button>
             </div>
           ) : (
-            <Tabs defaultValue="buy" className="w-full" onValueChange={(v) => setActiveTab(v as "buy" | "sell")}>
+            <Tabs
+              defaultValue="buy"
+              className="w-full"
+              onValueChange={(v) => setActiveTab(v as "buy" | "sell")}
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="buy">Long</TabsTrigger>
                 <TabsTrigger value="sell">Short</TabsTrigger>

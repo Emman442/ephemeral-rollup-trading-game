@@ -1,10 +1,10 @@
 
 "use client";
 
-import { WalletButton } from "@/components/shared/WalletButton";
 import { RoundTimer } from "@/components/arena/RoundTimer";
 import Link from "next/link";
 import { Swords } from "lucide-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export function Header() {
   return (
@@ -14,11 +14,22 @@ export function Header() {
           <Swords className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold font-heading">TradeArena</h1>
         </Link>
-        
+
         <div className="flex items-center gap-4 md:gap-8">
           <RoundTimer />
           <div className="hidden md:block">
-            <WalletButton />
+            <WalletMultiButton
+              style={{
+                backgroundColor: "#13D991",
+                color: "white",
+                borderRadius: "8px",
+                padding: "5px 20px",
+                fontSize: "16px",
+                fontWeight: "600",
+                height: "40px",
+                border: "none",
+              }}
+            />
           </div>
         </div>
       </div>

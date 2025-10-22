@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,9 +30,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
-import { useArena } from "@/context/ArenaContext";
 import { useToast } from "@/hooks/use-toast";
-
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -48,12 +45,11 @@ const formSchema = z.object({
 });
 
 interface CreateGameFormProps {
-    isOpen: boolean;
-    onOpenChange: (isOpen: boolean) => void;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
 }
 
 export function CreateGameForm({ isOpen, onOpenChange }: CreateGameFormProps) {
-  const { dispatch } = useArena();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,11 +61,10 @@ export function CreateGameForm({ isOpen, onOpenChange }: CreateGameFormProps) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    dispatch({ type: "CREATE_GAME", payload: values });
     toast({
-        title: "Game Created!",
-        description: `Your game "${values.name}" has been created successfully.`
-    })
+      title: "Game Created!",
+      description: `Your game "${values.name}" has been created successfully.`,
+    });
     onOpenChange(false);
     form.reset();
   }
@@ -98,7 +93,7 @@ export function CreateGameForm({ isOpen, onOpenChange }: CreateGameFormProps) {
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="startingCapital"
               render={({ field }) => (

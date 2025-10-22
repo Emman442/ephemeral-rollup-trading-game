@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useArena } from "@/context/ArenaContext";
+import { useState } from "react";
 
 export function RoundTimer() {
-  const { state } = useArena();
-  const { timeLeft, duration, isRunning } = state.roundState;
+const duration = 300; // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] =useState(duration);
+  const [isRunning, setIsRunning] = useState(true);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
